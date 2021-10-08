@@ -71,6 +71,10 @@ public class Solution {
     List<Packet> packetList = this.packets;
     for (int i = 0; i < packetList.size(); i++) {
       Packet packet = packetList.get(i);
+      while (packet == null) {
+        i++;
+        packet = packetList.get(i);
+      }
       Pallet pallet = null;
       for (PalletType palletType : this.palletTypes) {
         if (packet.getWidth() <= palletType.getWidth() && packet.getLength() <= palletType.getLength() && packet.getWeight() <= palletType.getMaxWeight()) {
@@ -93,12 +97,24 @@ public class Solution {
           if (packetList.get(i + 1).getWidth() < pallet.getType().getWidth()) {
             if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 1).getLength()) {
               warehouse.putPacket(pallet, packetList.get(i + 1), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
-              // 12 - ( 12 - 2) = 2
-              i++;
+              packetList.set(i+1, null);
             }
           }
         }
-      } catch (IndexOutOfBoundsException ignored) {
+      } catch (IndexOutOfBoundsException|NullPointerException ignored) {
+
+      }
+
+      try {
+        if (packetList.get(i + 2).getTruckId() == packet.getTruckId() && packetList.get(i + 2).getWeight() <= pallet.getType().getMaxWeight() - pallet.getCurrentWeight() ) {
+          if (packetList.get(i + 2).getWidth() < pallet.getType().getWidth()) {
+            if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 2).getLength()) {
+              warehouse.putPacket(pallet, packetList.get(i + 2), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
+              packetList.set(i+2, null);
+            }
+          }
+        }
+      } catch (IndexOutOfBoundsException|NullPointerException ignored) {
 
       }
 
