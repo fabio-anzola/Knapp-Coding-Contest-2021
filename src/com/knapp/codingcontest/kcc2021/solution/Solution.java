@@ -157,6 +157,36 @@ public class Solution {
 
       }
 
+      try {
+        if (packetList.get(i + 6).getTruckId() == packet.getTruckId() && packetList.get(i + 6).getWeight() <= pallet.getType().getMaxWeight() - pallet.getCurrentWeight() ) {
+          if (packetList.get(i + 6).getWidth() < pallet.getType().getWidth()) {
+            if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 6).getLength()) {
+              warehouse.putPacket(pallet, packetList.get(i + 6), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
+              packetList.set(i+6, null);
+            }
+          }
+        }
+      } catch (IndexOutOfBoundsException|NullPointerException ignored) {
+
+      }
+
+      try {
+        if (packetList.get(i + 7).getTruckId() == packet.getTruckId() && packetList.get(i + 7).getWeight() <= pallet.getType().getMaxWeight() - pallet.getCurrentWeight() ) {
+          if (packetList.get(i + 7).getWidth() < pallet.getType().getWidth()) {
+            if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 7).getLength()) {
+              warehouse.putPacket(pallet, packetList.get(i + 7), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
+              packetList.set(i+7, null);
+            }
+          }
+        }
+      } catch (IndexOutOfBoundsException|NullPointerException ignored) {
+
+      }
+
+
+
+
+
 
     }
 
