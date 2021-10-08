@@ -12,7 +12,7 @@
 
 package com.knapp.codingcontest.kcc2021.solution;
 
-import java.util.Map;
+import java.util.*;
 
 import com.knapp.codingcontest.kcc2021.data.InputData;
 import com.knapp.codingcontest.kcc2021.data.Institute;
@@ -20,6 +20,7 @@ import com.knapp.codingcontest.kcc2021.data.Packet;
 import com.knapp.codingcontest.kcc2021.data.Pallet;
 import com.knapp.codingcontest.kcc2021.data.Pallet.PacketPos;
 import com.knapp.codingcontest.kcc2021.data.PalletType;
+import com.knapp.codingcontest.kcc2021.warehouse.PalletExtendsViolatedException;
 import com.knapp.codingcontest.kcc2021.warehouse.Warehouse;
 import com.knapp.codingcontest.kcc2021.warehouse.WarehouseInfo;
 
@@ -41,6 +42,10 @@ public class Solution {
   protected final InputData input;
   protected final Warehouse warehouse;
 
+  List<Packet> packets;
+  List<PalletType> palletTypes;
+
+
   // ----------------------------------------------------------------------------
 
   public Solution(final Warehouse warehouse, final InputData input) {
@@ -48,6 +53,10 @@ public class Solution {
     this.warehouse = warehouse;
     // TODO: prepare data structures
 
+    this.packets = input.getPackets();
+    this.palletTypes = new ArrayList<PalletType>(input.getPalletTypes());
+
+    System.out.println(this.palletTypes);
   }
 
   // ----------------------------------------------------------------------------
@@ -57,6 +66,26 @@ public class Solution {
    */
   public void run() throws Exception {
     // TODO: make calls to API (see below)
+
+    for (Packet packet : this.packets) {
+      Pallet pallet = null;
+      for (PalletType palletType : this.palletTypes) {
+        if (packet.getWidth() <= palletType.getWidth() && packet.getLength() <= palletType.getLength() && packet.getWeight() <= palletType.getMaxWeight()) {
+          if (pallet == null) {
+            pallet = warehouse.preparePallet(packet.getTruckId(), palletType);
+          }
+          if (palletType.getWidth() < pallet.getType().getWidth() && palletType.getLength() < pallet.getType().getLength()) {
+            pallet = warehouse.preparePallet(packet.getTruckId(), palletType);
+          }
+          break;
+        }
+      }
+      final int x = 0;
+      final int y = 0;
+      final boolean rotated = false;
+      warehouse.putPacket(pallet, packet, x, y, rotated);
+    }
+
 
   }
 

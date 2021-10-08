@@ -149,3 +149,5 @@ Temporary Items
 .apdisk
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,macos
+
+warehouse-operations.csv
