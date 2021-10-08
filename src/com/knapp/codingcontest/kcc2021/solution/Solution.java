@@ -118,6 +118,19 @@ public class Solution {
 
       }
 
+      try {
+        if (packetList.get(i + 3).getTruckId() == packet.getTruckId() && packetList.get(i + 3).getWeight() <= pallet.getType().getMaxWeight() - pallet.getCurrentWeight() ) {
+          if (packetList.get(i + 3).getWidth() < pallet.getType().getWidth()) {
+            if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 3).getLength()) {
+              warehouse.putPacket(pallet, packetList.get(i + 3), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
+              packetList.set(i+3, null);
+            }
+          }
+        }
+      } catch (IndexOutOfBoundsException|NullPointerException ignored) {
+
+      }
+
 
 
     }
