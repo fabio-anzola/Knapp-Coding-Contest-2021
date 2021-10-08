@@ -54,9 +54,10 @@ public class Solution {
     // TODO: prepare data structures
 
     this.packets = input.getPackets();
-    this.palletTypes = new ArrayList<PalletType>(input.getPalletTypes());
 
-    System.out.println(this.palletTypes);
+    this.packets.sort(Comparator.comparingInt(Packet::getTruckId).thenComparing(Packet::getLength).thenComparing(Packet::getWidth).thenComparing(Packet::getWeight));
+
+    this.palletTypes = new ArrayList<>(input.getPalletTypes());
   }
 
   // ----------------------------------------------------------------------------
@@ -65,16 +66,18 @@ public class Solution {
    * The main entry-point
    */
   public void run() throws Exception {
-    // TODO: make calls to API (see below)
 
-    for (Packet packet : this.packets) {
+    // TODO: make calls to API (see below)
+    List<Packet> packetList = this.packets;
+    for (int i = 0; i < packetList.size(); i++) {
+      Packet packet = packetList.get(i);
       Pallet pallet = null;
       for (PalletType palletType : this.palletTypes) {
         if (packet.getWidth() <= palletType.getWidth() && packet.getLength() <= palletType.getLength() && packet.getWeight() <= palletType.getMaxWeight()) {
           if (pallet == null) {
             pallet = warehouse.preparePallet(packet.getTruckId(), palletType);
           }
-          if (palletType.getWidth() < pallet.getType().getWidth() && palletType.getLength() < pallet.getType().getLength()) {
+          if (palletType.getWidth() < pallet.getType().getWidth() || palletType.getLength() < pallet.getType().getLength()) {
             pallet = warehouse.preparePallet(packet.getTruckId(), palletType);
           }
           break;
@@ -84,6 +87,23 @@ public class Solution {
       final int y = 0;
       final boolean rotated = false;
       warehouse.putPacket(pallet, packet, x, y, rotated);
+
+      try {
+        if (packetList.get(i + 1).getTruckId() == packet.getTruckId() && packetList.get(i + 1).getWeight() <= pallet.getType().getMaxWeight() - pallet.getCurrentWeight() ) {
+          if (packetList.get(i + 1).getWidth() < pallet.getType().getWidth()) {
+            if (pallet.getType().getLength() - packet.getLength() >= packetList.get(i + 1).getLength()) {
+              warehouse.putPacket(pallet, packetList.get(i + 1), pallet.getType().getLength() - (pallet.getType().getLength() - packet.getLength()), 0, rotated);
+              // 12 - ( 12 - 2) = 2
+              i++;
+            }
+          }
+        }
+      } catch (IndexOutOfBoundsException ignored) {
+
+      }
+
+
+
     }
 
 
